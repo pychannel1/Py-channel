@@ -14,7 +14,7 @@ if not api_key:
     st.error("API Key မတွေ့ပါ။ Settings တွင် GEMINI_API_KEY ထည့်သွင်းပေးပါ။")
 else:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModelgemini-pro (သို့မဟုတ် models/gemini-1.5-flash-latest) သို့ ပြောင်းပေးပါ-
 
     # User စာရိုက်ထည့်ရမည့် နေရာ
     user_input = st.text_area("ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ-", height=180, placeholder="ဒီနေရာမှာ ဇာတ်လမ်းအကျဉ်းကို ရိုက်ထည့်ပါ...")
