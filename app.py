@@ -6,6 +6,7 @@ st.set_page_config(page_title="Burmese Movie Recap Generator", page_icon="🎬")
 st.title("Burmese Movie Recap Generator")
 st.write("ဇာတ်လမ်း အကျဉ်း သို့မဟုတ် အကြောင်းအရာကို ထည့်သွင်းပေးပါ။")
 
+# API Key ရယူခြင်း
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
@@ -22,6 +23,7 @@ try:
 except Exception:
     model = genai.GenerativeModel("gemini-1.5-flash")
 
+# စာသားရိုက်ထည့်ရမည့် အကွက်
 user_input = st.text_area("ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ-", placeholder="ဒီနေရာမှာ ဇာတ်လမ်းအကျဉ်းကို ရိုက်ထည့်ပါ...")
 
 if st.button("Generate Recap", type="primary"):
