@@ -1,23 +1,27 @@
 import streamlit as st
 import google.generativeai as genai
 
-st.set_page_config(page_title="Burmese Movie Recap Generator", page_icon="")
+st.set_page_config(page_title="Burmese Movie Recap Generator", page_icon="🎬")
 
 st.title("Burmese Movie Recap Generator")
 st.write("ဇာတ်လမ်း အကျဉ်း သို့မဟုတ် အကြောင်းအရာကို ထည့်သွင်းပေးပါ။")
 
-# Secrets ထဲမှ API Key ရယူခြင်း
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
     st.error("API Key မတွေ့ပါ။ Settings တွင် GEMINI_API_KEY ထည့်ပေးပါ။")
     st.stop()
 
-# Gemini Setup ပြုလုပ်ခြင်း
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-pro")
 
-# User Input အကွက်
+# အလုပ်လုပ်သော Gemini Model ကို အလိုအလျောက် ရွေးချယ်ခြင်း
+try:
+    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    model_name = "models/gemini-1.5-flash" if "models/gemini-1.5-flash" in available_models else (available_models[0] if available_models else "gemini-1.5-flash")
+    model = genai.GenerativeModel(model_name)
+except Exception:
+    model = genai.GenerativeModel("gemini-1.5-flash")
+
 user_input = st.text_area("ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ-", placeholder="ဒီနေရာမှာ ဇာတ်လမ်းအကျဉ်းကို ရိုက်ထည့်ပါ...")
 
 if st.button("Generate Recap", type="primary"):
@@ -28,7 +32,7 @@ if st.button("Generate Recap", type="primary"):
             try:
                 prompt = f"""
                 သင်သည် ကျွမ်းကျင်သော Burmese Movie Recapper တစ်ဦး ဖြစ်သည်။
-                အောက်ပါ ဇာတ်လမ်းအချက်အလက်ကို အခြေခံပြီး စိတ်ဝင်စားဖွယ် Movie Recap တစ်ခု ရေးပေးပါ:
+                အောက်ပါ ဇာတ်လမ်းအချက်အလက်ကို အခြေခံပြီး မြန်မာဘာသာဖြင့် စိတ်ဝင်စားဖွယ် Movie Recap တစ်ခု ရေးပေးပါ:
 
                 {user_input}
                 """
