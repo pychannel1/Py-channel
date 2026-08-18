@@ -13,15 +13,9 @@ if not api_key:
     st.error("API Key မတွေ့ပါ။ Settings တွင် GEMINI_API_KEY ထည့်ပေးပါ။")
     st.stop()
 
+# Gemini Setup ပြုလုပ်ခြင်း
 genai.configure(api_key=api_key)
-
-# အလုပ်လုပ်သော Gemini Model ကို အလိုအလျောက် ရွေးချယ်ခြင်း
-try:
-    available_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    model_name = "models/gemini-1.5-flash" if "models/gemini-1.5-flash" in available_models else (available_models[0] if available_models else "gemini-1.5-flash")
-    model = genai.GenerativeModel(model_name)
-except Exception:
-    model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # စာသားရိုက်ထည့်ရမည့် အကွက်
 user_input = st.text_area("ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ-", placeholder="ဒီနေရာမှာ ဇာတ်လမ်းအကျဉ်းကို ရိုက်ထည့်ပါ...")
