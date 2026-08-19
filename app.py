@@ -3,22 +3,29 @@ import google.generativeai as genai
 
 st.set_page_config(
     page_title="Burmese Movie Recap Generator",
-    page_icon=""
+    page_icon="🎬"
 )
+
+# =========================
+# WEBSITE UI
+# =========================
 
 st.title("Burmese Movie Recap Generator")
 st.write("ဇာတ်လမ်း အကျဉ်း သို့မဟုတ် အကြောင်းအရာကို ထည့်သွင်းပေးပါ။")
 
-# Gemini API Key
+# =========================
+# GEMINI API
+# User မမြင်နိုင်တဲ့ Backend
+# =========================
+
 api_key = st.secrets.get("GEMINI_API_KEY")
 
 if not api_key:
-    st.error("API Key မတွေ့ပါ။ Settings တွင် GEMINI_API_KEY ထည့်ပေးပါ။")
+    st.error("ဝန်ဆောင်မှုကို လက်ရှိအသုံးပြု၍ မရသေးပါ။")
     st.stop()
 
 genai.configure(api_key=api_key)
 
-# Gemini Model
 try:
     supported_models = [
         m.name
@@ -26,14 +33,14 @@ try:
         if "generateContent" in m.supported_generation_methods
     ]
 
-    # Gemini 3.6 Flash ကို အရင်ရှာမယ်
-    gemini_36_models = [
+    # Gemini 3.6 Flash ရှိရင် အဲဒါကိုသုံးမယ်
+    target_models = [
         m for m in supported_models
         if "gemini-3.6-flash" in m
     ]
 
-    if gemini_36_models:
-        target_model = gemini_36_models[0]
+    if target_models:
+        target_model = target_models[0]
     elif supported_models:
         target_model = supported_models[0]
     else:
@@ -42,21 +49,32 @@ try:
     model = genai.GenerativeModel(target_model)
 
 except Exception:
-    model = genai.GenerativeModel("gemini-3.6-flash")
+    # Backend မှာပဲ Error ဖြစ်မယ်
+    model = None
 
 
-# User Input
+# =========================
+# USER INPUT
+# =========================
+
 user_input = st.text_area(
     "ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ-",
     placeholder="ဒီနေရာမှာ ဇာတ်လမ်းအကျဉ်းကို ရိုက်ထည့်ပါ..."
 )
 
 
-# Generate Button
+# =========================
+# GENERATE
+# =========================
+
 if st.button("Generate Recap", type="primary"):
 
     if not user_input.strip():
-        st.warning("ကျေးဇူးပြု၍ စာသား အရင် ရိုက်ထည့်ပေးပါ။")
+        st.warning("ကျေးဇူးပြု၍ ဇာတ်လမ်းအကြောင်းအရာ အရင်ထည့်ပေးပါ။")
+
+    elif model is None:
+        # User ကို Gemini/API/Python error မပြ
+        st.error("ဝန်ဆောင်မှုတွင် ခေတ္တအခက်အခဲ ဖြစ်နေပါသည်။ ခဏအကြာတွင် ပြန်လည်ကြိုးစားပေးပါ။")
 
     else:
         with st.spinner("AI က Movie Recap ရေးသားနေပါသည်..."):
@@ -70,9 +88,10 @@ if st.button("Generate Recap", type="primary"):
 
 လိုအပ်ချက်များ:
 - မြန်မာဘာသာဖြင့် ရေးပါ။
-- ဇာတ်လမ်းကို နားလည်လွယ်အောင် ရေးပါ။
+- နားလည်လွယ်အောင် ရေးပါ။
 - အရေးကြီးသော ဇာတ်ကောင်များနှင့် ဖြစ်ရပ်များကို မလွတ်စေနဲ့။
-- စာဖတ်သူ စိတ်ဝင်စားအောင် ဆက်တိုက်ရေးပါ။
+- ဇာတ်လမ်းကို အစမှအဆုံး ဆက်စပ်ပြီး ရေးပါ။
+- စိတ်ဝင်စားဖွယ် Movie Recap ပုံစံဖြင့် ရေးပါ။
 - မလိုအပ်သော အချက်အလက်များ မထည့်ပါနှင့်။
 
 ဇာတ်လမ်းအကြောင်းအရာ:
@@ -87,13 +106,17 @@ if st.button("Generate Recap", type="primary"):
 
                 st.markdown("### ရလဒ်:")
 
+                # User က လွယ်လွယ် Copy လုပ်နိုင်အောင်
                 st.text_area(
                     "Movie Recap",
                     value=result,
                     height=500
                 )
 
-                st.caption("အပေါ်က စာသားအကွက်ထဲကနေ Recap ကို ဖိထားပြီး Copy လုပ်နိုင်ပါတယ်။")
-
-            except Exception as e:
-                st.error(f"Error ဖြစ်ပေါ်နေပါသည်: {e}")
+            except Exception:
+                # ❗ Gemini error / API error / Model error
+                # User ဘက်မှာ အသေးစိတ်မပြ
+                st.error(
+                    "ဝန်ဆောင်မှုတွင် ခေတ္တအခက်အခဲ ဖြစ်နေပါသည်။ "
+                    "ခဏအကြာတွင် ပြန်လည်ကြိုးစားပေးပါ။"
+                )
