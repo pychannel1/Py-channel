@@ -20,15 +20,15 @@ try:
         if 'generateContent' in m.supported_generation_methods
     ]
     if any("gemini-1.5-flash" in m for m in supported_models):
-        target_model = [m for m in supported_models if "gemini-1.5-flash" in m][0]
+        target_model = [m for m in supported_models if "gemini-3.6-flash" in m][0]
     elif supported_models:
         target_model = supported_models[0]
     else:
-        target_model = "models/gemini-1.5-flash"
+        target_model = "models/gemini-3.6-flash
     
     model = genai.GenerativeModel(target_model)
 except Exception:
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-3.6-flash")
 
 user_input = st.text_area("ဇာတ်လမ်း အကြောင်းအရာ ရိုက်ထည့်ပါ-", placeholder="ဒီနေရာမှာ ဇာတ်လမ်းအကျဉ်းကို ရိုက်ထည့်ပါ...")
 
